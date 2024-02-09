@@ -36,7 +36,7 @@ public class OpenAPIConfig {
                 .addMediaType("application/json", new MediaType()
                         .addExamples("default", new Example().value("{\"message\":\"default message\", \"success\":\"default Value(true)\"}"))));
         Components components = new Components();
-        components.addResponses("badRequest",badRequestResponse);
+        components.addResponses("badRequestResponse",badRequestResponse);
         components.addResponses("internalServerResponse",internalServerResponse);
         components.addResponses("successfulResponse", successfulResponse);
         components.addResponses("createResponse", createResponse);

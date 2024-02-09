@@ -77,18 +77,19 @@ public class InventoryServiceImpl implements InventoryService {
             log.info("Inventory already exists");
             ProductDto productDto = productFeignClient.getProductById(inventoryDto.getProductId()).getBody();
             if (productDto != null) {
+                Inventory inventoryObj = inventoryRepository.findById(inventoryId).orElseThrow();
                 Inventory inventory = Inventory.builder()
                         .inventoryId(inventoryId)
                         .product(productDto)
-                        .quantity(inventoryDto.getQuantity())
+                        .quantity(inventoryObj.getQuantity() + inventoryDto.getQuantity())
                         .color(inventoryDto.getColor())
                         .createdDate(inventoryDto.getCreatedDate())
-                        .lastModifiedDate(inventoryDto.getLastModifiedDate())
+                        .lastModifiedDate(new Date())
                         .status(InventoryStatus.valueOf(inventoryDto.getStatus().name()))
                         .build();
                 inventoryRepository.save(inventory);
                 return ApiResponseDto.builder()
-                        .message("Inventory Already Exists")
+                        .message("Inventory Updated Successfully")
                         .success(true)
                         .build();
             } else {
