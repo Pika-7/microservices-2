@@ -31,21 +31,46 @@ public class ProductController {
         return new ResponseEntity<>(productService.addProduct(productDto, categoryId), HttpStatus.CREATED);
     }
 
+    @Operation(description = "Fetching all products based on the categoryId",
+            responses = {
+                    @ApiResponse(responseCode = "200", ref = "successfulResponse"),
+                    @ApiResponse(responseCode = "400", ref = "badRequestResponse"),
+                    @ApiResponse(responseCode = "500", ref = "internalServerResponse"),
+            })
     @GetMapping("/{id}")
     public ResponseEntity<List<ProductDto>> getAllProductsOfCategory(@PathVariable("id") String categoryId) {
         return ResponseEntity.ok(productService.getAllProductsOfCategory(categoryId));
     }
+
+    @Operation(description = "Fetching a product based on the productId",
+            responses = {
+                    @ApiResponse(responseCode = "200", ref = "successfulResponse"),
+                    @ApiResponse(responseCode = "400", ref = "badRequestResponse"),
+                    @ApiResponse(responseCode = "500", ref = "internalServerResponse"),
+            })
 
     @GetMapping("/by-id/{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") String productId) {
         return ResponseEntity.ok(productService.getProductById(productId));
     }
 
+    @Operation(description = "Updating product details using productId",
+            responses = {
+                    @ApiResponse(responseCode = "200", ref = "successfulResponse"),
+                    @ApiResponse(responseCode = "400", ref = "badRequestResponse"),
+                    @ApiResponse(responseCode = "500", ref = "internalServerResponse"),
+            })
     @PutMapping("/update-product/{id}")
     public ResponseEntity<ApiResponseDto> updateProduct(@RequestBody @Valid ProductDto productDto, @PathVariable("id") String productId) {
         return ResponseEntity.ok(productService.updateProduct(productDto, productId));
     }
 
+    @Operation(description = "Removing product based on the productId",
+            responses = {
+                    @ApiResponse(responseCode = "200", ref = "successfulResponse"),
+                    @ApiResponse(responseCode = "400", ref = "badRequestResponse"),
+                    @ApiResponse(responseCode = "500", ref = "internalServerResponse"),
+            })
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponseDto> removeProduct(@PathVariable("id") String productId) {
         return ResponseEntity.ok(productService.removeProduct(productId));
