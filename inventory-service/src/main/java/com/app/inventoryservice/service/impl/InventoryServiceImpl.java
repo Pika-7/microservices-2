@@ -22,7 +22,6 @@ import java.util.UUID;
 public class InventoryServiceImpl implements InventoryService {
     private final InventoryRepository inventoryRepository;
     private final ProductFeignClient productFeignClient;
-
     @Override
     public ApiResponseDto addInventory(InventoryDto inventoryDto) {
         log.info("Inside addInventory method of InventoryServiceImpl");

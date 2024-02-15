@@ -1,0 +1,106 @@
+services:
+  eureka:
+    build: eureka-service/
+    image: eureka-service:0.0.1-SNAPSHOT
+    container_name: eureka-service
+    ports:
+      - "61800:61800"
+    networks:
+      - app-network
+
+  mysqlDB:
+    image: mysql:8.1
+    container_name: mysql_database
+    environment:
+      MYSQL_DATABASE: product_service_db
+      MYSQL_PORT: 3306
+      MYSQL_PASSWORD: Warriorrocks7$
+      MYSQL_ROOT_PASSWORD: Warriorrocks7$
+    networks:
+      - app-network
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    networks:
+      - app-network
+    volumes:
+      - mongo-data:/data/db
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - app-network
+    volumes:
+      - zookeeper-data:/data/zookeeperData
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    restart: unless-stopped
+    container_name: broker
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - kafka-data:/data/kafkaData
+    networks:
+      - app-network
+
+  product:
+    build: product-service/
+    image: product-service:0.0.1-SNAPSHOT
+    container_name: product-service
+    ports:
+      - "23130:23130"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqlDB:3306/product_service_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Warriorrocks7$
+      SPRING_JPA_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:61800/eureka
+    networks:
+      - app-network
+    depends_on:
+      - mysqlDB
+
+  inventory:
+    build: inventory-service/
+    image: inventory-service:0.0.1-SNAPSHOT
+    container_name: inventory-service
+    ports:
+      - "23131:23131"
+    environment:
+      PRODUCT_SERVICE_URL: http://product:23130/api/v1/product
+      MONGO_PORT: 27017
+      MONGO_DATABASE: inventory_service_db
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:61800/eureka
+    networks:
+      - app-network
+    depends_on:
+      - product
+      - mongo
+
+
+networks:
+  app-network:
+volumes:
+  mysql-data:
+  mongo-data:
+  kafka-data:
+  zookeeper-data:

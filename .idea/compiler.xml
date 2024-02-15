@@ -9,8 +9,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="eureka-service" />
         <module name="product-service" />
-        <module name="inventory-service" />
         <module name="order-service" />
+        <module name="inventory-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17">
